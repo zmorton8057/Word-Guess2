@@ -7,7 +7,7 @@ var losses = 0;
 
 ////////////////////{Write a function that{changes the variable, push to the dom}}
 
-
+var wordCorrectArray = [];
 
 /////empty array used to store randomized animal object
 var answerBank = [];
@@ -69,83 +69,96 @@ var answerBank = animal[Math.floor(Math.random() * animal.length)];
 console.log(answerBank.species)
 
 console.log(animal)
-var initGame = function(){
-    hintArray = []
-    userIncorrectArray = [];
-    guessCount = 0;
-    generateNewWord()
-}
+var initGame = function () {
+         generateNewWord()
+ }
 ////////randomizes and returns  random object from the animal array
-function generateNewWord(){
-answerBank = animal[Math.floor(Math.random() * animal.length)];
-console.log(answerBank.species)
-} generateNewWord();
+function generateNewWord() {
+var correctAnswerBlank = ""
+wordCorrectArray = [1, 2, 3];
+userGuessArray = []
+    answerBank = animal[Math.floor(Math.random() * animal.length)];
+    console.log(answerBank.species)
 
-var wordCorrectArray = answerBank.species.split("")
+
+wordCorrectArray = answerBank.species.split("")
 console.log(wordCorrectArray)
 //////loops through the stored answerBank to return
-for (var i = 0; i < answerBank.species.length; i++){
-////// for each indices of species push an underscore at that index
-userGuessArray.push("_ ")
-//////removes spaces as a guess from the array and splices in a space in the DOM
-if(answerBank.species[i] == " "){ 
-    userGuessArray.splice(i, 1, " ")    
-    }  
-////take the length of userGuessArray and make it equal to guessCount
-var guessCount = userGuessArray.length
-} 
+for (var i = 0; i < answerBank.species.length; i++) {
+    ////// for each indices of species push an underscore at that index
+    userGuessArray.push("_ ")
+    //////removes spaces as a guess from the array and splices in a space in the DOM
+    if (answerBank.species[i] == " ") {
+        userGuessArray.splice(i, 1, " ")
+    }
+    ////take the length of userGuessArray and make it equal to guessCount
+    var guessCount = userGuessArray.length
+}
 ////add the guessCount to the dom
 $('#guessCount').html("<div>Guesses: " + guessCount + "</div>")
 //// joins together blanks that exist in the array
-var correctAnswerBlank = userGuessArray.join("")
+correctAnswerBlank = userGuessArray.join("")
 console.log(correctAnswerBlank)
 ///append blank array to the div
-$('#userCorrect').append("<div>" + correctAnswerBlank + "</div>");
+
+
+$('#userCorrect').html("<div>" + correctAnswerBlank + "</div>");
 
 ////grabs html button element and assigns a click function to it
-$("#objectHint").click(function (){
-/////grabs the html hintDiv and appends the object's hint when the button is clicked
-$('#hintDiv').append("<div>" + answerBank.hint + "</div>")
-////makes the button only clickable once
-$(this).attr('disabled',true);
+$("#objectHint").click(function () {
+    /////grabs the html hintDiv and appends the object's hint when the button is clicked
+    $('#hintDiv').html("<div>" + answerBank.hint + "</div>")
+    ////makes the button only clickable once
+    $(this).attr('disabled', true);
 })
-
+} 
 /////////////////////////////////////////////////////end of initGame function
 
-document.onkeyup = function(e){
+document.onkeyup = function (e) {
     var userInput = e.key.toLowerCase();
-   
+    userIncorrectArray = [];
+    $('#userIncorrect').append("<div>" + userIncorrectArray + "</div>")
 
 
 
+    for (var j = 0; j < wordCorrectArray.length; j++) {
+        console.log(wordCorrectArray[j])
+        console.log(userGuessArray[j])
+        if (userInput == wordCorrectArray[j]) {
+            userGuessArray[j] = userInput
 
-for (var j = 0; j < wordCorrectArray.length; j++){ console.log(wordCorrectArray[j])
-    console.log(userGuessArray[j])
-    if(userInput == wordCorrectArray[j]){
-        userGuessArray[j] = userInput
+        }
+    }
+    var speciesDisplay = userGuessArray.join("")
+    document.getElementById('userCorrect').textContent = speciesDisplay.toUpperCase()
+
+    if (speciesDisplay === answerBank.species) {
+        wins++
+        console.log(wins)
+        $('#winCount').html("<div>Wins: " + wins + "</div>")
+    }
+
+    if (userInput !== wordCorrectArray[j]) {
+        guessCount--
+        console.log(wins)
+        $('#guessCount').html("<div>Guesses:" + guessCount + "</div>")
+    }
+    if (guessCount === 0) {
+        losses++
+        alert("You Lose, Try Again")
+        $('#lossCount').html("<div>Losses: " + losses + "</div>")
         
-    } 
-} 
-var speciesDisplay = userGuessArray.join("")
-document.getElementById('userCorrect').textContent = speciesDisplay.toUpperCase()
+    }
 
-if (speciesDisplay === answerBank.species){
-    wins++
-    console.log(wins) 
-    $('#winCount').html("<div>Wins: " + wins + "</div>")
-    
-}
 
-if(userInput !== wordCorrectArray[j]){
-    guessCount--
-    console.log(wins) 
-    $('#guessCount').html("<div>Guesses:" + guessCount + "</div>")
-}
-if (guessCount === 0){
-    losses++
-    alert("You Lose, Try Again")
-    $('#lossCount').html("<div>Losses: " + losses + "</div>")
-} 
-initGame(userInput === 32)
 
+    if (userInput !== wordCorrectArray[j]) {
+        userIncorrectArray = userInput
+        $('#userIncorrect').append("<div>" + userIncorrectArray + "</div>")
+    }
+
+    if (userInput == " "){
+    generateNewWord()
+    }
+   
 } ///// end of onkeyup function
